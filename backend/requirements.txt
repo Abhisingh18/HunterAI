@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-multipart
+pandas
+openpyxl
+huggingface_hub
+pypdf
+python-dotenv
+email-validator
+requests
