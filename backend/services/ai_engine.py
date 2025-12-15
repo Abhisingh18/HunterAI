@@ -4,6 +4,7 @@ import json
 import os
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 def generate_cold_email(resume_text: str, company_info: dict, tone="Confident, polite, result-oriented"):
     """
@@ -51,7 +52,30 @@ INSTRUCTIONS:
 7. **OUTPUT ONLY** the email content.
 """
 
-    return generate_email_via_ollama(prompt)
+"""
+
+    if GROQ_API_KEY:
+        return generate_email_via_groq(prompt)
+    else:
+        return generate_email_via_ollama(prompt)
+
+def generate_email_via_groq(prompt: str) -> str:
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "messages": [{"role": "user", "content": prompt}],
+        "model": "mixtral-8x7b-32768"
+    }
+    
+    try:
+        response = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers)
+        if response.status_code == 200:
+            return response.json()['choices'][0]['message']['content']
+        return f"Error (Groq): {response.text}"
+    except Exception as e:
+        return f"Error connecting to Groq: {str(e)}"
 
 def generate_email_via_ollama(prompt: str) -> str:
     payload = {

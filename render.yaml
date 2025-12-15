@@ -20,6 +20,8 @@ services:
         value: http://localhost:11434 # Placeholder, user must update this in Render dashboard
       - key: PORT
         value: 10000
+      - key: GROQ_API_KEY
+        sync: false
 
   # Frontend Service
   - type: web

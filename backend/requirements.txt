@@ -8,4 +8,3 @@ pypdf
 python-dotenv
 email-validator
 requests
-gunicorn
