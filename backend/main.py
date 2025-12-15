@@ -127,3 +127,7 @@ async def send_bulk_emails_endpoint(request: SendEmailRequest):
             
     print("✅ Bulk sending complete.")
     return {"results": results}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=10000)
