@@ -35,7 +35,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @app.get("/")
 def read_root():
-    return {"message": "Hunter AI Backend is running!"}
+    return "AI Outreach Backend is running 🚀"
 
 @app.post("/upload")
 async def upload_files(resume: UploadFile = File(...), company_excel: UploadFile = File(...)):
