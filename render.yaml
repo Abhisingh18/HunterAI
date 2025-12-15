@@ -6,7 +6,7 @@ services:
     region: singapore
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python backend/main.py
+    startCommand: python main.py
     rootDirectory: .
     envVars:
       - key: PYTHON_VERSION
