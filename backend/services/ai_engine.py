@@ -52,7 +52,7 @@ INSTRUCTIONS:
 7. **OUTPUT ONLY** the email content.
 """
 
-"""
+
 
     if GROQ_API_KEY:
         return generate_email_via_groq(prompt)
