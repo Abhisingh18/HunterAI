@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { UploadCloud, FileText, Settings, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 const UploadView = ({ onUploadComplete }) => {
     const [resume, setResume] = useState(null);
@@ -21,7 +22,7 @@ const UploadView = ({ onUploadComplete }) => {
         formData.append("company_excel", excel);
 
         try {
-            const res = await axios.post("http://localhost:8000/upload", formData);
+            const res = await axios.post(`${API_BASE_URL}/upload`, formData);
             // Pass minimal data needed for generator + generic SMTP creds storage (in state)
             onUploadComplete({
                 ...res.data,

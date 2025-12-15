@@ -1,0 +1,38 @@
+services:
+  # Backend Service
+  - type: web
+    name: hunter-ai-backend
+    env: python
+    region: singapore
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
+    rootDirectory: backend
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: hunter-ai-frontend
+          property: url
+      - key: OLLAMA_URL
+        value: http://localhost:11434 # Placeholder, user must update this in Render dashboard
+      - key: PORT
+        value: 10000
+
+  # Frontend Service
+  - type: web
+    name: hunter-ai-frontend
+    env: static
+    region: singapore
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    rootDirectory: frontend
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: hunter-ai-backend
+          property: url

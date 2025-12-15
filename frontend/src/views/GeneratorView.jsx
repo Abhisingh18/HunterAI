@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { RefreshCw, Check, X, Send, Edit, Copy } from 'lucide-react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 const GeneratorView = ({ uploadData }) => {
     const [generatedEmails, setGeneratedEmails] = useState([]);
@@ -17,7 +18,7 @@ const GeneratorView = ({ uploadData }) => {
     const generateEmails = async () => {
         setLoading(true);
         try {
-            const res = await axios.post("http://localhost:8000/generate-emails", {
+            const res = await axios.post(`${API_BASE_URL}/generate-emails`, {
                 resume_filename: uploadData.resume_filename,
                 excel_filename: uploadData.excel_filename
             });
@@ -50,7 +51,7 @@ const GeneratorView = ({ uploadData }) => {
                 smtp_password: uploadData.smtpPassword,
                 resume_filename: uploadData.resume_filename // Pass filename for attachment
             };
-            await axios.post("http://localhost:8000/send-bulk-emails", payload);
+            await axios.post(`${API_BASE_URL}/send-bulk-emails`, payload);
             alert(`Email sent to ${current.company}`);
         } catch (e) {
             console.error(e);

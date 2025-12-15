@@ -1,7 +1,9 @@
 import requests
 import json
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
+import os
+
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
 
 def generate_cold_email(resume_text: str, company_info: dict, tone="Confident, polite, result-oriented"):
     """

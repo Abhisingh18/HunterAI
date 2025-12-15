@@ -19,6 +19,7 @@ app = FastAPI(title="Hunter AI Backend")
 origins = [
     "http://localhost:5173",
     "http://localhost:3000",
+    os.getenv("FRONTEND_URL", "http://localhost:5173"),  # Allow Render frontend
 ]
 
 app.add_middleware(
