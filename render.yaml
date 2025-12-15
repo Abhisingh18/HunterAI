@@ -6,7 +6,7 @@ services:
     region: singapore
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port 10000
     rootDirectory: backend
     envVars:
       - key: PYTHON_VERSION
