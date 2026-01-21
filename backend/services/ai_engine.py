@@ -1,15 +1,12 @@
 import requests
 import json
-
 import os
 
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 def generate_cold_email(resume_text: str, company_info: dict, tone="Confident, polite, result-oriented"):
     """
-    Generates a cold email using local Ollama HTTP API (stable & production-ready).
-    Requires: 'ollama' server running on port 11434.
+    Generates a cold email using Groq API.
     """
 
     # 1. Map Data
@@ -52,14 +49,12 @@ INSTRUCTIONS:
 7. **OUTPUT ONLY** the email content.
 """
 
-
-
-    if GROQ_API_KEY:
-        return generate_email_via_groq(prompt)
-    else:
-        return generate_email_via_ollama(prompt)
+    return generate_email_via_groq(prompt)
 
 def generate_email_via_groq(prompt: str) -> str:
+    if not GROQ_API_KEY:
+        return "Error: GROQ_API_KEY not found in environment variables."
+
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json"
@@ -76,27 +71,3 @@ def generate_email_via_groq(prompt: str) -> str:
         return f"Error (Groq): {response.text}"
     except Exception as e:
         return f"Error connecting to Groq: {str(e)}"
-
-def generate_email_via_ollama(prompt: str) -> str:
-    payload = {
-        "model": "mistral",
-        "prompt": prompt,
-        "stream": False
-    }
-
-    try:
-        response = requests.post(
-            OLLAMA_URL,
-            data=json.dumps(payload),
-            headers={"Content-Type": "application/json"}
-        )
-
-        if response.status_code != 200:
-            return f"Error: Ollama returned status {response.status_code}. Response: {response.text}"
-
-        return response.json().get("response", "Error: No response from AI model.")
-
-    except requests.exceptions.ConnectionError:
-        return "Error: Could not connect to Ollama. Is the server running at http://localhost:11434?"
-    except Exception as e:
-        return f"Error connecting to AI: {str(e)}"

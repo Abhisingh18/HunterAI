@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import UploadForm from './UploadForm';
+import UploadForm from './UploadForm';
 import axios from 'axios';
+import { API_BASE_URL } from './config';
 
 const Dashboard = () => {
     const [step, setStep] = useState(1);
@@ -27,7 +29,7 @@ const Dashboard = () => {
 
     const generateEmails = async (data) => {
         try {
-            const response = await axios.post("http://localhost:8000/generate-emails", {
+            const response = await axios.post(`${API_BASE_URL}/generate-emails`, {
                 resume_filename: data.resume_filename,
                 excel_filename: data.excel_filename
             });
@@ -57,7 +59,7 @@ const Dashboard = () => {
                 smtp_password: smtpPassword
             };
 
-            const response = await axios.post("http://localhost:8000/send-bulk-emails", payload);
+            const response = await axios.post(`${API_BASE_URL}/send-bulk-emails`, payload);
             setSendingResults(response.data.results);
             setStep(4);
         } catch (error) {

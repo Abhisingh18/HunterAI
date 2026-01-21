@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from './config';
 
 const UploadForm = ({ onUploadSuccess }) => {
     const [resume, setResume] = useState(null);
@@ -22,7 +23,7 @@ const UploadForm = ({ onUploadSuccess }) => {
         formData.append("company_excel", excel);
 
         try {
-            const response = await axios.post("http://localhost:8000/upload", formData, {
+            const response = await axios.post(`${API_BASE_URL}/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
