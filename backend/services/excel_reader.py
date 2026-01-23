@@ -2,7 +2,11 @@ import pandas as pd
 
 def read_company_excel(file_path: str):
     try:
-        df = pd.read_excel(file_path)
+        if file_path.endswith('.csv'):
+            df = pd.read_csv(file_path)
+        else:
+            df = pd.read_excel(file_path)
+            
         # Normalize headers to lowercase? Or expected exact match?
         # User prompt: "Company Name | HR Name | Email | Role | Tech Stack | Type"
         # Let's clean up nan values first
@@ -10,5 +14,5 @@ def read_company_excel(file_path: str):
         companies = df.to_dict(orient="records")
         return companies
     except Exception as e:
-        print(f"Error reading Excel: {e}")
+        print(f"Error reading Excel/CSV: {e}")
         return []

@@ -5,6 +5,10 @@ import os
 import shutil
 import time
 from dotenv import load_dotenv
+
+# Load env vars *before* importing services that might need them
+load_dotenv()
+
 from services.resume_parser import parse_resume
 from services.excel_reader import read_company_excel
 from services.ai_engine import generate_cold_email
@@ -12,7 +16,6 @@ from services.email_sender import send_email
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 
-load_dotenv()
 
 app = FastAPI(title="Hunter AI Backend")
 

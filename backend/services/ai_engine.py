@@ -2,72 +2,78 @@ import requests
 import json
 import os
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
 def generate_cold_email(resume_text: str, company_info: dict, tone="Confident, polite, result-oriented"):
     """
     Generates a cold email using Groq API.
     """
+    
+    # Fetch key dynamically to ensure it's loaded
+    GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
     # 1. Map Data
-    candidate_profile = resume_text[:3000]
+    candidate_profile = resume_text[:4000] # Increased limit slightly
     company_name = company_info.get('Company Name', 'Target Company')
     role = company_info.get('Role', 'Employee')
     tech_stack = company_info.get('Tech Stack', 'Industry standard technologies')
     hr_name = company_info.get('HR Name', 'Hiring Manager')
 
     # 2. Construct Master Prompt
+    # Enhanced prompt for better personalization
     prompt = f"""
-You are a professional AI Outreach Assistant.
+You are an expert Copywriter and AI Outreach Assistant.
 
 OBJECTIVE:
-Generate a highly personalized, professional cold email (120-150 words).
+Write a high-converting, hyper-personalized cold email to {hr_name} at {company_name} for the role of {role}.
 
-CANDIDATE PROFILE:
+CANDIDATE PROFILE (RESUME):
 {candidate_profile}
 
 TARGET COMPANY DETAILS:
 Company: {company_name}
-HR Name: {hr_name}
 Role: {role}
 Tech Stack: {tech_stack}
 
 INSTRUCTIONS:
-1. **Strictly Professional Tone**: Use a confident, polite, and result-oriented tone.
-2. **ZERO Spelling/Graver Errors**: Double-check for any spelling or grammatical mistakes.
-3. **Relevance**: Extract specific skills or projects from the Candidate Profile that match the Target Company's Tech Stack.
-4. **Structure**:
-   - Subject: Professional & Catchy (e.g., "Software Engineer for [Company] - [Candidate Name]")
-   - Salutation: "Dear [HR Name],"
-   - Opening: Mention enthusiasm for [Company Name] and specific compatibility.
-   - Body: Connect candidate's [specific project/skill] to the [Role].
-   - Closing: Call to Action (e.g., "Attached my resume for your review. Available for a quick chat.")
-   - Sign-off: "Best regards, [Candidate Name]"
+1.  **Analyze the Match**: First, silently identify the *strongest* project or skill from the candidate's resume that DIRECTLY pertains to the company's tech stack ({tech_stack}).
+2.  **Hook**: Open with a strong, non-generic hook. Mention why you are interested in {company_name} or a specific achievement of theirs if known (or just general enthusiasm for their mission).
+3.  **The "Why Me" (Crucial)**: You MUST include 1-2 sentences explicitly connecting a specific project/skill from the resume to the {role} requirements. "For example, in my project [Project Name], I used [Tech] to achieve [Result], which aligns with your work in [Domain]."
+4.  **Tone**: Confident, professional, yet human. Avoid stiff corporate jargon.
+5.  **Structure**:
+    *   **Subject**: Catchy & Relevant (e.g., "{role} Application - [Candidate Name] - [Key Skill] expert")
+    *   **Salutation**: Dear {hr_name},
+    *   **Body**: Hook -> "Why Me" (Specific Proof) -> Value Proposition.
+    *   **Call to Action**: Clear request for a brief chat or interview. Mention attached resume.
+    *   **Sign-off**: Best regards, [Candidate Name]
 
-5. **Attachment Mention**: You MUST mention that the resume is attached in the email body.
-6. **No Placeholders**: Do not use [Insert Here]. Fill based on data provided.
-7. **OUTPUT ONLY** the email content.
+CONSTRAINTS:
+*   Keep it under 150 words.
+*   NO spelling errors.
+*   NO placeholders like [Insert Here] - use the data provided. If data is missing, generalize intelligently.
+*   OUTPUT ONLY the email content.
 """
 
-    return generate_email_via_groq(prompt)
+    return generate_email_via_groq(prompt, GROQ_API_KEY)
 
-def generate_email_via_groq(prompt: str) -> str:
-    if not GROQ_API_KEY:
-        return "Error: GROQ_API_KEY not found in environment variables."
+def generate_email_via_groq(prompt: str, api_key: str) -> str:
+    if not api_key:
+        return "Error: GROQ_API_KEY not found in environment variables. Please check your .env file."
 
     headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
+    # Using a slightly larger/better model if available, or sticking to standard fast one
     payload = {
         "messages": [{"role": "user", "content": prompt}],
-        "model": "mixtral-8x7b-32768"
+        "model": "llama-3.3-70b-versatile", 
+        "temperature": 0.7 
     }
     
     try:
         response = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers)
         if response.status_code == 200:
             return response.json()['choices'][0]['message']['content']
-        return f"Error (Groq): {response.text}"
+        else:
+            return f"Error (Groq API): {response.status_code} - {response.text}"
     except Exception as e:
         return f"Error connecting to Groq: {str(e)}"

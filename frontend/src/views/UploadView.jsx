@@ -57,7 +57,7 @@ const UploadView = ({ onUploadComplete }) => {
                     <div className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${excel ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200 hover:border-slate-400'}`}>
                         <input
                             type="file"
-                            accept=".xlsx, .xls"
+                            accept=".xlsx, .xls, .csv"
                             onChange={(e) => setExcel(e.target.files[0])}
                             className="hidden"
                             id="excel-upload"
@@ -70,7 +70,7 @@ const UploadView = ({ onUploadComplete }) => {
                                 </div>
                             ) : (
                                 <span className="text-sm text-slate-500">
-                                    Drag & drop Excel<br /><span className="text-xs opacity-70">or click to browse</span>
+                                    Drag & drop Excel or CSV<br /><span className="text-xs opacity-70">or click to browse</span>
                                 </span>
                             )}
                         </label>
