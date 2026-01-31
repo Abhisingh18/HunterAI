@@ -1,14 +1,14 @@
-import requests
-import json
+from openai import OpenAI
 import os
+import json
 
 def generate_cold_email(resume_text: str, company_info: dict, tone="Confident, polite, result-oriented"):
     """
-    Generates a cold email using Groq API.
+    Generates a cold email using OpenRouter API.
     """
     
     # Fetch key dynamically to ensure it's loaded
-    GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+    OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
     # 1. Map Data
     candidate_profile = resume_text[:4000] # Increased limit slightly
@@ -52,28 +52,28 @@ CONSTRAINTS:
 *   OUTPUT ONLY the email content.
 """
 
-    return generate_email_via_groq(prompt, GROQ_API_KEY)
+    return generate_email_via_ai(prompt, OPENROUTER_API_KEY)
 
-def generate_email_via_groq(prompt: str, api_key: str) -> str:
+def generate_email_via_ai(prompt: str, api_key: str) -> str:
     if not api_key:
-        return "Error: GROQ_API_KEY not found in environment variables. Please check your .env file."
+        return "Error: OPENROUTER_API_KEY not found in environment variables. Please check your .env file."
 
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-    # Using a slightly larger/better model if available, or sticking to standard fast one
-    payload = {
-        "messages": [{"role": "user", "content": prompt}],
-        "model": "llama-3.3-70b-versatile", 
-        "temperature": 0.7 
-    }
-    
     try:
-        response = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers)
-        if response.status_code == 200:
-            return response.json()['choices'][0]['message']['content']
-        else:
-            return f"Error (Groq API): {response.status_code} - {response.text}"
+        client = OpenAI(
+            api_key=api_key,
+            base_url="https://openrouter.ai/api/v1"
+        )
+
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-20b",
+            messages=[
+                {"role": "system", "content": "You are a professional AI assistant."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.5,
+            max_tokens=1000 # Increased slightly to ensure full email + reasoning found in some models
+        )
+        
+        return response.choices[0].message.content
     except Exception as e:
-        return f"Error connecting to Groq: {str(e)}"
+        return f"Error connecting to OpenRouter: {str(e)}"

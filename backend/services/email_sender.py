@@ -6,8 +6,10 @@ import os
 
 def send_email(to_email, subject, body, smtp_config=None, attachment_path=None):
     # If smtp_config is not provided, try to use env vars (though user provided creds are better)
-    sender_email = smtp_config.get("email") if smtp_config else os.getenv("SMTP_EMAIL")
-    password = smtp_config.get("password") if smtp_config else os.getenv("SMTP_PASSWORD")
+    # If smtp_config is not provided, try to use env vars (though user provided creds are better)
+    # Fix: Ensure we don't use empty strings from config if they are empty
+    sender_email = (smtp_config and smtp_config.get("email")) or os.getenv("SMTP_EMAIL")
+    password = (smtp_config and smtp_config.get("password")) or os.getenv("SMTP_PASSWORD")
     
     if not sender_email or not password:
         return False, "Missing SMTP credentials"
